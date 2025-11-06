@@ -21,6 +21,12 @@ builder.Services.AddIdentity<IdentityUser,IdentityRole>(options =>
     options.Password.RequiredLength = 1;
 }).AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

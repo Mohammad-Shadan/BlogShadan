@@ -15,9 +15,26 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#">Category</a>
                 </li>
-                
-                
             </ul>
+
+            @if(User.Identity.IsAuthenticated)
+            {
+           
+            <div class="ms-auto me-5">
+                <a class="btn btn-outline-light" asp-controller="Auth" asp-action="Logout">Logout</a>
+
+                </div>
+            }
+            else
+            {
+                
+
+            <div class="d-flex ms-auto gap-2 me-5">
+                <a class="btn btn-outline-light" asp-controller="Auth" asp-action="Login">Login</a>
+                <a class="btn btn-outline-light" asp-controller="Auth" asp-action="Register">Register</a>
+
+            </div>
+            }
             <form class="d-flex">
          
             </form>
