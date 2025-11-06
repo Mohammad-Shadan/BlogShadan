@@ -1,0 +1,117 @@
+﻿@using BlogShadan.Helper
+@model Post
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<style>
+    .content-wrapper {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        font-family: sans-serif
+    }
+
+    .feature-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        margin-bottom: 20px
+    }
+</style>
+<div class="text-end my-3">
+    <a class="btn btn-secondary mx-3 my3" asp-action="Edit" asp-controller="Post" asp-route-id="@Model.Id" >Edit Post</a>
+    <a class="btn btn-danger" asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Id">Delete Post</a>
+</div>
+
+<div class="content-wrapper">
+    <h1>@Model.Title</h1>
+    <p>
+        <span class="badge bg-primary">By</span> @Model.Author
+        <span class="badge bg-primary">Published On</span> @Model.PublishedDate.ToString("MMMM dd,yyyy")
+    </p>
+    <p>
+        <span class="badge bg-secondary">Category</span>@Model.Category.Name
+    </p>
+    <img src="@Model.FeatureImagePath" alt="@Model.Title" class="feature-image" />
+    <hr />
+    <div>
+        @Html.Raw(Model.Content)
+    </div>
+    <hr />
+
+    @if (Model.Comments.Any())
+    {
+        <div id="commentSection">
+            <h3 class="bg-dark-subtle">Comments</h3>
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@comment.UserName</h5>
+                        <p class="card-text text-muted">@comment.CommentDate.ToString("MMM dd,yyyy")</p>
+                        <p class="card-text">@comment.Content</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No Comments yet. Be the First to comment</p>
+    }
+
+    <h4>Add a Comment</h4>
+    <form id="commentForm">
+        <div class="form-group">
+            <label for="Username">Name</label>
+            <input id="Username" name="Username" required class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="Content">Content</label>
+            <textarea id="Content" name="Content" rows="3" required class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary rounded mt-4 p-2">Submit Comment</button>
+    </form>
+
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(function(){
+            $("#commentForm").on('submit',function(){
+                event.preventDefault();
+                var userName= $('#Username').val();
+                var content = $('#Content').val();
+                var postId = @Model.Id;
+                
+                $.ajax({
+                    url:'@Url.Action("AddComment","Post")',
+                    type:'POST',
+                    contentType: 'application/json',
+                    data:JSON.stringify({
+                        userName:userName,
+                        content:content,
+                        postId:postId
+                    }),
+                    success: function(response){
+                        $('#commentForm')[0].reset();
+                        $('#commentSection').append(
+                        `
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-body">
+                             <h5 class="card-title">${response.username}</h5>
+                             <p class="card-text text-muted">${response.commentdate}</p>
+                             <p class="card-text">${response.content}</p>
+                        </div>
+                        `
+                        )
+                    }
+
+                })
+            
+            })
+        });
+    </script>
+
+}
