@@ -135,7 +135,8 @@ namespace BlogShadan.Controllers
                 return View(editViewModel);
             }
             var postFromDB = await  _context.Posts.AsNoTracking().FirstOrDefaultAsync(p=>p.Id==editViewModel.Post.Id);
-            if (postFromDB == null) {
+            if (postFromDB == null) 
+            {
                 return NotFound();
             }
 
